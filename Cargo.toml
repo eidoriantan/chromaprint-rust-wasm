@@ -1,5 +1,5 @@
 [package]
-name = "chromaprint"
+name = "chromaprint-web"
 version = "1.0.0"
 description = "A pure Rust implementation of Chromaprint, compiled to WebAssembly"
 license = "UNLICENSED"
