@@ -4,6 +4,7 @@ version = "1.0.0"
 description = "A pure Rust implementation of Chromaprint, compiled to WebAssembly"
 license = "UNLICENSED"
 homepage = "https://github.com/eidoriantan/chromaprint-rust-wasm"
+edition = 2024
 authors = [
   "Martin Charles <martincharles07@gmail.com>",
   "Adriane Justine Tan <me@eidoriantan.com>"
