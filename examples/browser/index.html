@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>chromaprint-web: browser example</title>
+  </head>
+  <body>
+    <h1>chromaprint-web</h1>
+    <p>Pick an audio file. It is decoded and fingerprinted locally.</p>
+    <input id="file" type="file" accept="audio/*" />
+    <pre id="output"></pre>
+
+    <script type="module">
+      import init, { fingerprint } from 'https://cdn.jsdelivr.net/npm/chromaprint-web@1/chromaprint_web.js'
+
+      const SAMPLE_RATE = 44100
+      const output = document.getElementById('output')
+
+      // Fetches and instantiates chromaprint_web_bg.wasm next to the JS file
+      await init()
+
+      document.getElementById('file').addEventListener('change', async (event) => {
+        const file = event.target.files[0]
+        if (!file) return
+
+        output.textContent = 'Decoding…'
+        try {
+          // An OfflineAudioContext decodes and resamples to SAMPLE_RATE
+          const context = new OfflineAudioContext(1, 1, SAMPLE_RATE)
+          const audio = await context.decodeAudioData(await file.arrayBuffer())
+          const samples = toMonoInt16(audio)
+
+          output.textContent = 'Fingerprinting…'
+          const result = fingerprint(SAMPLE_RATE, samples)
+          output.textContent = `Duration: ${audio.duration.toFixed(2)} s\nFingerprint: ${result}`
+        } catch (err) {
+          output.textContent = `Error: ${err.message ?? err}`
+        }
+      })
+
+      /** Averages every channel into one and converts it to 16-bit PCM. */
+      function toMonoInt16(audio) {
+        const out = new Int16Array(audio.length)
+        const channels = Array.from({ length: audio.numberOfChannels }, (_, c) => audio.getChannelData(c))
+        for (let i = 0; i < audio.length; i++) {
+          let sum = 0
+          for (const channel of channels) sum += channel[i]
+          const s = Math.max(-1, Math.min(1, sum / channels.length))
+          out[i] = s < 0 ? s * 0x8000 : s * 0x7fff
+        }
+        return out
+      }
+    </script>
+  </body>
+</html>

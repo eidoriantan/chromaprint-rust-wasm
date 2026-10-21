@@ -1,0 +1,11 @@
+{
+  "name": "chromaprint-web-node-example",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node fingerprint.mjs"
+  },
+  "dependencies": {
+    "chromaprint-web": "^1.0.1"
+  }
+}
